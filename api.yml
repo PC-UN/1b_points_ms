@@ -1,0 +1,207 @@
+#Test with: http://editor.swagger.io/
+
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Microservice for Students
+  description: Java + MySQL
+  license:
+    name: Software Architecture 2018-I
+host: 192.168.99.101:4040
+basePath: /
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /points/resources/point/:
+    post:
+      summary: Creates a new point
+      operationId: createPoint
+      parameters:
+        - name: point
+          in: body
+          required: true
+          description: Point Object
+          schema:
+            $ref: '#/definitions/PointInput'
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+    get:
+      summary: Returns all students
+      operationId: getAllStudents
+      responses:
+        '200':
+          description: Ok
+          schema:
+            $ref: '#/definitions/StudentsList'
+        '406':
+          description: Not Acceptable (Invalid Params)
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+
+  /points/resources/point/{id}:
+    get:
+      summary: Returns a point with the given id
+      operationId: getPointById
+      parameters:
+        - name: id
+          in: path
+          description: The id of the point to be returned
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Ok
+          schema:
+            $ref: '#/definitions/Point'
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '406':
+            description: Not Acceptable (Invalid Params)
+            schema:
+              $ref: '#/definitions/ErrorModel'
+        '500':
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+
+    put:
+      summary: Updates a point with the given id
+      operationId: updatePoint
+      parameters:
+        - name: id
+          in: path
+          description: The id of the point to be updated
+          required: true
+          type: integer
+        - name: point
+          in: body
+          required: true
+          description: Point Object
+          schema:
+            $ref: '#/definitions/PointInput'
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '406':
+            description: Not Acceptable (Invalid Params)
+            schema:
+              $ref: '#/definitions/ErrorModel'
+        '500':
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+
+    delete:
+      summary: Deletes a point with the given id
+      operationId: deletePoint
+      parameters:
+        - name: id
+          in: path
+          description: The id of the point to be deleted
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Ok
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '406':
+            description: Not Acceptable (Invalid Params)
+            schema:
+              $ref: '#/definitions/ErrorModel'
+        '500':
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+
+definitions:
+
+  # Points
+  Point:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      category:
+        type: string
+      contact:
+        type: string
+      email:
+        type: string
+      latitude:
+        type: float
+      longitude:
+        type: float
+      business_hours:
+        type: string
+
+  PointInput:
+    type: object
+    name:
+        type: string
+      category:
+        type: string
+      contact:
+        type: string
+      email:
+        type: string
+      latitude:
+        type: float
+      longitude:
+        type: float
+      business_hours:
+        type: string
+
+  StudentsList:
+    type: object
+    required:
+      - total
+      - list
+    properties:
+      total:
+        type: number
+      list:
+        type: array
+        items:
+          $ref: '#/definitions/Point'
+
+# Errors
+  ErrorModel:
+    type: object
+    required:
+      - message
+      - code
+    properties:
+      message:
+        type: string
+      code:
+        type: number
+      description:
+        type: object
